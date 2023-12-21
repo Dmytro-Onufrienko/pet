@@ -1,27 +1,30 @@
 import { FC } from "react";
-import GoogleLoginButton from "react-google-login";
+import GoogleLogin from "react-google-login"
 
-const clientId =
-  "903862645929-rfj62e0fd86v53v7nijumldmg9ee6brr.apps.googleusercontent.com";
 
-const GoogleLogin: FC = () => {
+const cliendId = '903862645929-rfj62e0fd86v53v7nijumldmg9ee6brr.apps.googleusercontent.com'
+
+const Login: FC = () => {
   const onSuccess = (res: any) => {
-    console.log(res);
-  };
+    console.log('success', res);
+  }
 
-  const onFailure = (err: any) => {
-    console.log("err", err);
-  };
-
+  const onFailure = (res: any) => {
+    console.log('error', res);
+  }
+  
   return (
-    <GoogleLoginButton
-      onSuccess={onSuccess}
-      onFailure={onFailure}
-      clientId={clientId}
-      cookiePolicy={"single_host_origin"}
-      isSignedIn={true}
-    />
-  );
-};
+    <div id={'signInButton'}>
+      <GoogleLogin 
+        clientId={cliendId}
+        buttonText="login"
+        onSuccess={onSuccess}
+        onFailure={onFailure}
+        cookiePolicy={'single_host_origin'}
+        isSignedIn={true}
+      />
+    </div>
+  )
+}
 
-export default GoogleLogin;
+export default Login
