@@ -1,0 +1,35 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateUserInput {
+  password: String!
+  username: String!
+}
+
+input LoginInput {
+  password: String!
+  username: String!
+}
+
+type LoginOutput {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): UserOutput!
+  login(LoginInput: LoginInput!): LoginOutput!
+  loginWithGoogle: String!
+}
+
+type Query {
+  currentUser: UserOutput!
+  refreshToken: LoginOutput!
+  users: [UserOutput!]!
+}
+
+type UserOutput {
+  id: String!
+  username: String!
+}
