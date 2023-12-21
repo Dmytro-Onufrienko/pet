@@ -7,11 +7,12 @@ import { UserModule } from 'src/modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
-import { AuthController } from './auth.controller';
-import { GoogleStrategy } from './strategies/google.strategy';
+import { TokenEntity } from './entities/token.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([TokenEntity]),
     ConfigModule.forRoot({
       envFilePath: ['.env', '.env.local'],
       isGlobal: true,
@@ -21,13 +22,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
     UserModule,
     JwtModule.register({ secret: process.env.JWT_SECRET }),
   ],
-  providers: [
-    AuthResolver,
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    GoogleStrategy,
-  ],
-  controllers: [AuthController],
+  providers: [AuthResolver, AuthService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

@@ -7,9 +7,7 @@ import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { IUserEntity } from '../user/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TokenEntity } from './entities/token.entity';
+import { ThirdPartyLoginInput } from './dto/input/third-party-login.input';
 
 @Resolver()
 export class AuthResolver {
@@ -17,7 +15,7 @@ export class AuthResolver {
 
   @Mutation(() => LoginOutput)
   @UseGuards(GqlAuthGuard)
-  async login(@Args('LoginInput') loginInput: LoginInput, @Context() context) {
+  async login(@Context() context) {
     const { accessToken, refreshToken } = await this.authService.login(
       context.user,
     );
@@ -27,6 +25,20 @@ export class AuthResolver {
     }
 
     return new BadRequestException('Wrong username or password');
+  }
+
+  @Mutation(() => LoginOutput)
+  async thirdPartyLogin(
+    @Args('ThirdPartyLoginInput') loginInput: ThirdPartyLoginInput,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.thirdPartyLogin(loginInput);
+
+    if (accessToken && refreshToken) {
+      return { accessToken, refreshToken };
+    }
+
+    return new BadRequestException('Something went wrong');
   }
 
   @Query(() => LoginOutput)
@@ -43,12 +55,5 @@ export class AuthResolver {
       accessToken,
       refreshToken,
     };
-  }
-
-  @Mutation(() => String)
-  @UseGuards(AuthGuard('google'))
-  async loginWithGoogle() {
-    console.log('req');
-    return 'hello';
   }
 }

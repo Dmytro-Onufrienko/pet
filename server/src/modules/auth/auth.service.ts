@@ -1,4 +1,3 @@
-import { getAccessToken } from './../../../../client/src/utils/getTokens/index';
 import {
   BadRequestException,
   Inject,
@@ -13,11 +12,19 @@ import { IUserEntity } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TokenEntity } from './entities/token.entity';
+import { LoginOptions } from './enums';
 
 type SaveTokens = {
   userId: string;
   accessToken: string;
   refreshToken: string;
+  payload?: any;
+};
+
+type ThirdPartyUser = {
+  username: string;
+  userId: string;
+  thirdPartyService: LoginOptions;
   payload?: any;
 };
 
@@ -49,6 +56,24 @@ export class AuthService {
     };
   }
 
+  async thirdPartyLogin(user: ThirdPartyUser) {
+    const { accessToken, refreshToken } = this.getTokenPair({
+      userId: user.userId,
+      username: user.username,
+    });
+
+    await this.saveTokens({
+      userId: user.userId,
+      accessToken,
+      refreshToken,
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
   async validateUser(username: string, password: string) {
     const user = await this.userService.getUserByUsernameWithPassword(username);
 
@@ -66,15 +91,6 @@ export class AuthService {
     }
 
     throw new BadRequestException('username or password is incorrect');
-  }
-
-  logout() {
-    return `This action updates a # auth`;
-  }
-
-  thirdPartyLogin({ username }) {
-    // fiend user
-    // if not found - create
   }
 
   async saveTokens({ userId, accessToken, refreshToken, payload }: SaveTokens) {

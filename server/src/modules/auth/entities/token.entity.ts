@@ -31,5 +31,5 @@ export class TokenEntity extends BaseEntity implements ITokenEntity {
   loggedVia: LoginOptions;
 
   @Column()
-  payload: any;
+  payload: string;
 }
