@@ -1,30 +1,35 @@
 import { FC } from "react";
-import GoogleLogin from "react-google-login"
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
-
-const cliendId = '903862645929-rfj62e0fd86v53v7nijumldmg9ee6brr.apps.googleusercontent.com'
-
-const Login: FC = () => {
-  const onSuccess = (res: any) => {
-    console.log('success', res);
-  }
-
-  const onFailure = (res: any) => {
-    console.log('error', res);
-  }
-  
-  return (
-    <div id={'signInButton'}>
-      <GoogleLogin 
-        clientId={cliendId}
-        buttonText="login"
-        onSuccess={onSuccess}
-        onFailure={onFailure}
-        cookiePolicy={'single_host_origin'}
-        isSignedIn={true}
-      />
-    </div>
-  )
+type GoodleResponse = {
+  credential: string;
+  clientId: string;
 }
 
-export default Login
+type DecodedResponse = {
+  email: string;
+  name: string;
+}
+
+const Login: FC = () => {
+  const onSuccess = ({ credential, clientId }: CredentialResponse) => {
+    const { email, name }: DecodedResponse = jwtDecode(credential ?? '');
+    console.log(email, name, clientId);
+  };
+
+  const onError = () => {
+    console.log("Помилка входу!");
+  };
+
+  return (
+    <div>
+      <GoogleLogin
+        onSuccess={onSuccess}
+        onError={onError}
+      />
+    </div>
+  );
+};
+
+export default Login;
